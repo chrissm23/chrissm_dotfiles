@@ -1,0 +1,11 @@
+Host hen
+	Hostname hen.t38.ph.tum.de
+	Port 22
+
+Host turtle_remote
+    Hostname 83.171.167.55
+    Port 36892
+
+Host turtle_vpn
+    Hostname 10.0.219.16
+    Port 22
