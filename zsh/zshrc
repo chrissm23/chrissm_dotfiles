@@ -1,0 +1,91 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Antigen-administered packages
+source ~/antigen.zsh
+
+antigen use oh-my-zsh
+
+antigen bundle git
+antigen bundle fzf
+
+antigen theme romkatv/powerlevel10k
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zsh-autosuggestions
+
+antigen apply
+
+# ---- paths ----
+typeset -U path
+path=(~/bin $path)
+export PATH
+
+# ---- opt config ----
+setopt hist_ignore_all_dups  # new commands already in history prune old history
+
+# ---- styles ----
+ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=#5fffff,bold'
+ZSH_HIGHLIGHT_STYLES[precommand]='fg=#5fffff,bold'
+ZSH_HIGHLIGHT_STYLES[arg0]='fg=#5fffff,bold'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#ff5555,bold'
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=#0096C8'
+ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]='fg=#009664'
+
+# ---- autosuggestion style ----
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#646464'
+
+# Add cuda directory to PATH
+export PATH="/usr/local/cuda/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/ch_sustay/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/ch_sustay/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/ch_sustay/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/ch_sustay/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+# LSP for lua
+export PATH="$PATH:$HOME/lua-language-server/bin/"
+
+# Julia
+export PATH="$HOME/julia-1.9.0/bin/:$PATH"
+
+# Environment for AMBER
+source /home/ch_sustay/amber22/amber.sh
+
+# Environment for GROMACS
+source /usr/local/gromacs/bin/GMXRC
+
+# Add appimages to path
+export PATH="$PATH:$HOME/Applications"
+# Use neovim appimage with easier vim and vi commands ("\vi" will still run vim)
+alias nvim="nvim.appimage"
+alias vim="nvim.appimage"
+alias vi="nvim.appimage"
+# Use MarkText appimage
+alias marktext="marktext-x86_64_e94cf48168e949ee60b95bed54505f33.AppImage"
+
+# General alias
+alias cpwd="pwd | xclip -selection clipboard"
+alias ls="exa"
+
+# Use zoxide
+eval "$(zoxide init zsh)"
+
+export PATH="$PATH:$HOME/PPM/"
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
