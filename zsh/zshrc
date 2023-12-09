@@ -44,30 +44,27 @@ export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/ch_sustay/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/ch_sustay/miniforge3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/ch_sustay/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/ch_sustay/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/ch_sustay/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/home/ch_sustay/miniforge3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/ch_sustay/anaconda3/bin:$PATH"
+        export PATH="/home/ch_sustay/miniforge3/bin:$PATH"
     fi
 fi
 unset __conda_setup
+
+if [ -f "/home/ch_sustay/miniforge3/etc/profile.d/mamba.sh" ]; then
+    . "/home/ch_sustay/miniforge3/etc/profile.d/mamba.sh"
+fi
 # <<< conda initialize <<<
 
-# LSP for lua
-export PATH="$PATH:$HOME/lua-language-server/bin/"
-
-# Julia
-export PATH="$HOME/julia-1.9.0/bin/:$PATH"
-
-# Environment for AMBER
+# Set Amber path
 source /home/ch_sustay/amber22/amber.sh
 
-# Environment for GROMACS
-source /usr/local/gromacs/bin/GMXRC
+. "$HOME/.cargo/env"
 
 # Add appimages to path
 export PATH="$PATH:$HOME/Applications"
@@ -75,17 +72,27 @@ export PATH="$PATH:$HOME/Applications"
 alias nvim="nvim.appimage"
 alias vim="nvim.appimage"
 alias vi="nvim.appimage"
-# Use MarkText appimage
-alias marktext="marktext-x86_64_e94cf48168e949ee60b95bed54505f33.AppImage"
 
 # General alias
 alias cpwd="pwd | xclip -selection clipboard"
 alias ls="exa"
+alias bat="bat --color=always --style=numbers"
 
 # Use zoxide
 eval "$(zoxide init zsh)"
 
-export PATH="$PATH:$HOME/PPM/"
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source ~/.fzfrc
+# Use fzf with ripgrep
+# alias fzf="$HOME/bash_scripts/fzf-ripgrep.sh"
+fzfrg() {
+  $HOME/bash_scripts/fzf_rg.sh "$@"
+}
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
