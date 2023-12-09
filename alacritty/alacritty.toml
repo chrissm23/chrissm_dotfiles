@@ -1,0 +1,35 @@
+import = ["~/.config/alacritty/rose-pine.toml"]
+
+[env]
+TERM = "xterm-256color"
+
+[font.normal]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Medium"
+
+[font.bold]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMonoNL Nerd Font Mono"
+style = "BoldItalic"
+
+[window]
+opacity = 0.8
+
+# [colors.primary]
+# background = "#000000"
+# foreground = "#ffffff"
+#
+# [colors.normal]
+# blue = "#0b5394"
+# green = "#38761d"
+# yellow = "#bf9000"
+# magenta = "#741b47"
+# cyan = "#00cccc"
+# white = "#ffffff"
