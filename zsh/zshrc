@@ -78,6 +78,9 @@ alias cpwd="pwd | xclip -selection clipboard"
 alias ls="exa"
 alias bat="bat --color=always --style=numbers"
 
+# Kitty alias
+alias icat="kitten icat"
+
 # Use zoxide
 eval "$(zoxide init zsh)"
 

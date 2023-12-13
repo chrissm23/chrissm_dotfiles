@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 
-# Default command
+##########################################################################################
+#Default
+##########################################################################################
+
 # export FZF_DEFAULT_COMMAND='( fd -t f -E ".*" -L . ; fd -t f -H -E ".git/*" -L . ) \
 #   2> /dev/null'
 
@@ -21,29 +24,74 @@
 # 	--color=spinner:#f6c177,info:#9ccfd8,separator:#403d52
 # 	--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
 
+##########################################################################################
+# Use CTRL-T to paste selected files from fzf to the terminal
+##########################################################################################
+
+function fzf_ctrl_t {
+
+  icat_prefix="kitty icat --clear --transfer-mode=stream --stdin=no \
+    --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0"
+
+  ( fd -t f -E '.*' -L . ; fd -t f -H -E '.git/*' -L . ) 2> /dev/null | \
+  fzf \
+    --bind=ctrl-j:down \
+    --bind=ctrl-k:up \
+    --bind '?:toggle-preview+execute-silent(printf "\e_Ga=d\e\\")' \
+    --bind=alt-j:preview-page-down \
+    --bind=alt-k:preview-page-up \
+    --bind 'esc:abort' \
+    --height 40% --reverse --border \
+    --preview="\
+      if [[ \$(file --mime-type -b {}) == image/* ]]; then
+        $icat_prefix {}
+      else
+        bat --style=numbers,header-filename --color=always {}
+      fi
+    " \
+    --preview-window=right:60%:hidden:wrap:border:sharp \
+    --margin 1% \
+    --color=fg:#908caa,bg:#191724,hl:#ebbcba \
+    --color=fg+:#e0def4,bg+:#26233a,hl+:#ebbcba \
+    --color=border:#403d52,header:#31748f,gutter:#191724 \
+    --color=spinner:#f6c177,info:#9ccfd8,separator:#403d52 \
+    --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
+
+  kitty icat --clear
+}
+
+zle -N fzf_ctrl_t
+bindkey '^T' fzf_ctrl_t
+
 # CTRL-T - Paste the selected files and directories onto the command-line
-export FZF_CTRL_T_COMMAND='( fd -t f -E ".*" -L . ; fd -t f -H -E ".git/*" -L . ) \
-  2> /dev/null'
+# export FZF_CTRL_T_COMMAND='( fd -t f -E ".*" -L . ; fd -t f -H -E ".git/*" -L . ) \
+#   2> /dev/null'
+#
+# export FZF_CTRL_T_OPTS="
+#   --bind 'ctrl-j:down'
+#   --bind 'ctrl-k:up'
+#   --bind '?:toggle-preview+execute(kitty icat --clear)'
+#   --bind 'alt-j:preview-page-down'
+#   --bind 'alt-k:preview-page-up'
+#   --bind 'esc:execute(kitty icat --clear)+abort'
+#   --height 40% --reverse --border
+#   --preview='
+#     if [[ \$(file --mime-type -b {}) == image/* ]]; then
+#       kitten icat --clear --transfer-mode=stream --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {}
+#     else
+#       bat --style=numbers,header-filename --color=always {}
+#     fi'
+#   --preview-window=right:60%:hidden:wrap:border:sharp
+#   --margin 1%
+#   --color=fg:#908caa,bg:#191724,hl:#ebbcba
+#   --color=fg+:#e0def4,bg+:#26233a,hl+:#ebbcba
+#   --color=border:#403d52,header:#31748f,gutter:#191724
+#   --color=spinner:#f6c177,info:#9ccfd8,separator:#403d52
+#   --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
 
-export FZF_CTRL_T_OPTS="
-  --bind 'ctrl-j:down'
-  --bind 'ctrl-k:up'
-  --bind '?:toggle-preview'
-  --bind 'alt-j:preview-page-down'
-  --bind 'alt-k:preview-page-up'
-  --height 40% --reverse --border
-  --preview 'bat --style=numbers,header-filename --color=always {}'
-  --preview-window=right:60%:hidden:wrap:border:sharp
-  --margin 1%
-  --color=fg:#908caa,bg:#191724,hl:#ebbcba
-	--color=fg+:#e0def4,bg+:#26233a,hl+:#ebbcba
-	--color=border:#403d52,header:#31748f,gutter:#191724
-	--color=spinner:#f6c177,info:#9ccfd8,separator:#403d52
-	--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
-
-# export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
-
-# ALT-C command to change directory
+##########################################################################################
+# ALT-C command to change directory with fzf
+##########################################################################################
 export FZF_ALT_C_COMMAND="fd --type d --hidden --follow --exclude .git"
 
 export FZF_ALT_C_OPTS="
@@ -60,4 +108,36 @@ export FZF_ALT_C_OPTS="
   --color=spinner:#f6c177,info:#9ccfd8,separator:#403d52
   --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
 
+##########################################################################################
+# fzf with ripgrep
+##########################################################################################
+function fzfrg {
+	# Switch between Ripgrep launcher mode (CTRL-R) and fzf filtering mode (CTRL-F)
+	rm -f /tmp/rg-fzf-{r,f}
+	RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+	INITIAL_QUERY="${*:-}"
+	: | fzf --ansi --disabled --query "$INITIAL_QUERY" \
+		--bind "start:reload($RG_PREFIX {q})+unbind(ctrl-r)" \
+		--bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+		--bind "ctrl-f:unbind(change,ctrl-f)+change-prompt(2. fzf> )+enable-search+rebind(ctrl-r)+transform-query(echo {q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f)" \
+		--bind "ctrl-r:unbind(ctrl-r)+change-prompt(1. ripgrep> )+disable-search+reload($RG_PREFIX {q} || true)+rebind(change,ctrl-f)+transform-query(echo {q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r)" \
+		--bind 'ctrl-j:down' \
+		--bind 'ctrl-k:up' \
+		--bind 'alt-j:preview-page-down' \
+		--bind 'alt-k:preview-page-up' \
+		--color "hl:-1:underline,hl+:-1:underline:reverse" \
+		--prompt '1. ripgrep> ' \
+		--delimiter : \
+		--header '╱ CTRL-R (ripgrep mode) ╱ CTRL-F (fzf mode) ╱' \
+		--preview 'bat --style=numbers,header-filename --color=always {1} --highlight-line {2}' \
+		--preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
+		--bind 'enter:become(nvim.appimage {1} +{2})'
+}
+
+zle -N fzfrg
+bindkey '^F' fzfrg
+
+##########################################################################################
+# Use fzf with TMUX
+##########################################################################################
 export FZF_TMUX=1
