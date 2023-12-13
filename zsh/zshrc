@@ -66,6 +66,9 @@ source /home/ch_sustay/amber22/amber.sh
 
 . "$HOME/.cargo/env"
 
+# Add $HOME/.local/bin to path
+export PATH="$PATH:$HOME/.local/bin"
+
 # Add appimages to path
 export PATH="$PATH:$HOME/Applications"
 # Use neovim appimage with easier vim and vi commands ("\vi" will still run vim)
@@ -78,7 +81,7 @@ alias cpwd="pwd | xclip -selection clipboard"
 alias ls="exa"
 alias bat="bat --color=always --style=numbers"
 
-# Kitty alias
+# kitty alias
 alias icat="kitten icat"
 
 # Use zoxide
@@ -90,11 +93,6 @@ eval "$(zoxide init zsh)"
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source ~/.fzfrc
-# Use fzf with ripgrep
-# alias fzf="$HOME/bash_scripts/fzf-ripgrep.sh"
-fzfrg() {
-  $HOME/bash_scripts/fzf_rg.sh "$@"
-}
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
