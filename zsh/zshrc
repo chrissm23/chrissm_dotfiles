@@ -68,6 +68,9 @@ source /home/ch_sustay/amber22/amber.sh
 
 # Add $HOME/.local/bin to path
 export PATH="$PATH:$HOME/.local/bin"
+# Add JAVA_HOME to path
+# export JAVA_HOME="$HOME/jdk-21.0.1"
+
 
 # Add appimages to path
 export PATH="$PATH:$HOME/Applications"
