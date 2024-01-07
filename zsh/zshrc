@@ -86,7 +86,6 @@ alias bat="bat --color=always --style=numbers"
 
 # kitty alias
 alias icat="kitten icat"
-alias kssh="kitten ssh"
 
 # Use zoxide
 eval "$(zoxide init zsh)"
