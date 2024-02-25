@@ -99,7 +99,7 @@ return {
     },
     opts = {
       options = {
-        mode = "tabs",
+        mode = "buffers",
         separator_style = "slant",
         show_buffer_close_icons = true,
         show_close_icon = true,
